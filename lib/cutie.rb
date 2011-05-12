@@ -49,7 +49,7 @@ class Cutie
   # a MediaHeader (mdhd) is a specific type of atom that has metadata
   # about a media atom
   class MediaHeader < Atom
-    attr_accessor :version, :flags, :ctime, :mtime, :tscale, :duration, :language, :quality
+    attr_accessor :version, :flags, :ctime, :mtime, :tscale, :ticks, :language, :quality
 
     def read(fh)
       @version = "\x00#{ fh.read(1) }".unpack('n').first
@@ -67,9 +67,9 @@ class Cutie
       @tscale   = read_uint16(fh)
 
       if @version == 0
-        @duration = read_uint16(fh)
+        @ticks  = read_uint16(fh)
       else
-        @duration = fh.read(8).unpack('N')
+        @ticks  = fh.read(8).unpack('N')
       end
 
       @language = read_uint8(fh)
@@ -77,7 +77,11 @@ class Cutie
     end
 
     def to_s
-      "MediaHeader v#{ version } [#{ position }, #{ size } bytes] [#{ tscale } @ #{ duration } sec]"
+      "MediaHeader v#{ version } [#{ position }, #{ size } bytes] [#{ duration } sec]"
+    end
+
+    def duration
+      ticks.to_f / tscale.to_f
     end
 
     private

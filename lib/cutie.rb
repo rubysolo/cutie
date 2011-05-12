@@ -5,8 +5,8 @@ class Cutie
   # for different data types
   class Atom
     CONTAINER_TYPES = %w(
-      dinf  edts  imag  imap  mdia  mdra  minf  moov  
-      rmra  stbl  trak  tref  udta  vnrp  
+      dinf  edts  imag  imap  mdia  mdra  minf  moov
+      rmra  stbl  trak  tref  udta  vnrp
     )
 
     attr_accessor :size, :format, :position, :children
@@ -49,35 +49,45 @@ class Cutie
   # a MediaHeader (mdhd) is a specific type of atom that has metadata
   # about a media atom
   class MediaHeader < Atom
-    attr_accessor :version
-
-    FIELDS = [
-      # field name, decoder (v0),                              decoder(v1)
-      [:flags,        lambda{|fh| fh.read(3).unpack('C3') } ],
-      [:ctime,        lambda{|fh| fh.read(4).unpack('N')  },     lambda{|fh| fh.read(8).unpack('N')  }],
-      [:mtime,        lambda{|fh| fh.read(4).unpack('N')  },     lambda{|fh| fh.read(8).unpack('NN') }],
-      [:tscale,       lambda{|fh| fh.read(4).unpack('N')  } ],
-      [:duration,     lambda{|fh| fh.read(4).unpack('N')  },     lambda{|fh| fh.read(8).unpack('NN') }],
-      [:language,     lambda{|fh| fh.read(2).unpack('n')  } ],
-      [:quality,      lambda{|fh| fh.read(2).unpack('n')  } ]
-    ].each do |(field, v0, v1)|
-      attr_accessor field
-    end
+    attr_accessor :version, :flags, :ctime, :mtime, :tscale, :duration, :language, :quality
 
     def read(fh)
       @version = "\x00#{ fh.read(1) }".unpack('n').first
 
-      FIELDS.each do |(field, v0, v1)|
-        decoder = @version == 0 ? v0 : v1
-        decoder ||= v0
+      @flags    = fh.read(3).unpack('C3')
 
-        value = decoder.call(fh)
-        self.send(:"#{ field }=", value)
+      if @version == 0
+        @ctime  = read_uint16(fh)
+        @mtime  = read_uint16(fh)
+      else
+        @ctime  = fh.read(8).unpack('N')
+        @mtime  = fh.read(8).unpack('N')
       end
+
+      @tscale   = read_uint16(fh)
+
+      if @version == 0
+        @duration = read_uint16(fh)
+      else
+        @duration = fh.read(8).unpack('N')
+      end
+
+      @language = read_uint8(fh)
+      @quality  = read_uint8(fh)
     end
 
     def to_s
-      "MediaHeader v#{ version } [#{ position }, #{ size } bytes] [#{ duration } sec]"
+      "MediaHeader v#{ version } [#{ position }, #{ size } bytes] [#{ tscale } @ #{ duration } sec]"
+    end
+
+    private
+
+    def read_uint16(s)
+      s.read(4).unpack('N').first
+    end
+
+    def read_uint8(s)
+      s.read(2).unpack('n').first
     end
 
   end
@@ -103,7 +113,7 @@ class Cutie
 
       if atom.container?
         @stack << atom
-      elsif filehandle.pos == atom.next_position
+      elsif filehandle.pos == @stack.last.next_position
         @stack.pop
       end
     end

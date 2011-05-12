@@ -1,4 +1,5 @@
 class Cutie
+  DEBUG = $stdout
   attr_accessor :filehandle, :root
 
   # quicktime files are composed of atoms, which are nested containers
@@ -98,26 +99,41 @@ class Cutie
 
 
 
-  def initialize(fh)
-    self.filehandle = fh
+  def initialize(fh, debug=false)
+    @debug      = debug
+    @filehandle = fh
   end
 
   class << self
-    def open(filepath)
-      new(File.open filepath, 'rb').parse
+    def open(filepath, debug=false)
+      new(File.open(filepath, 'rb'), debug).parse
     end
+  end
+
+  def debug?
+    @debug
+  end
+
+  def debug(msg)
+    return unless debug?
+    DEBUG.puts msg
   end
 
   def parse
     @root = next_atom
+    debug "loaded root atom: #{ @root }"
 
     @stack = [@root]
     while atom = next_atom
+      debug "loaded child atom: #{ atom }"
       @stack.last.children << atom
+      debug "stack now contains #{ @stack.length } atoms"
 
       if atom.container?
+        debug "pushing container atom onto the stack"
         @stack << atom
       elsif filehandle.pos == @stack.last.next_position
+        debug "popping last container from the stack"
         @stack.pop
       end
     end

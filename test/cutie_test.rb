@@ -1,6 +1,9 @@
 require File.expand_path('../../lib/cutie', __FILE__)
 require 'test/unit'
+require 'stringio'
 
+# stub out the debug logging
+Cutie::DEBUG = StringIO.new
 
 class TestCutie < Test::Unit::TestCase
 
@@ -13,6 +16,11 @@ class TestCutie < Test::Unit::TestCase
 
     assert_equal "mvhd", atom.children[0].format
     assert_equal "WLOC", atom.children[1].format
+  end
+
+  def test_debug_flag
+    video = Cutie.open(File.expand_path('../empty.mov', __FILE__), true)
+    assert video.debug?
   end
 
 end

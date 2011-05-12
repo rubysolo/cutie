@@ -1,6 +1,21 @@
 #!/usr/bin/env ruby
-
 require File.expand_path('../../lib/cutie', __FILE__)
+require 'optparse'
 
-video = Cutie.open(ARGV.first)
+options = {}
+optparse = OptionParser.new do |opts|
+  opts.banner = "Usage: #{ $0 } [options] file.mov"
+
+  opts.on("-d", "--[no-]debug", "show debug info") do |d|
+    options[:debug] = d
+  end
+end
+optparse.parse!
+
+if ARGV.empty?
+  puts optparse
+  exit(-1)
+end
+
+video = Cutie.open(ARGV.first, options[:debug])
 video.dump_atoms

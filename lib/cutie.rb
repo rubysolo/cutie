@@ -9,7 +9,7 @@ class Cutie
       rmra  stbl  trak  tref  udta  vnrp  
     )
 
-    attr_accessor :size, :format, :position
+    attr_accessor :size, :format, :position, :children
 
     def self.init(fh, position, size, format)
       klass = format == "mdhd" ? MediaHeader : Atom
@@ -22,6 +22,7 @@ class Cutie
       @position = position
       @size     = size
       @format   = format
+      @children = []
     end
 
     def read(fh)
@@ -98,6 +99,8 @@ class Cutie
 
     @stack = [@root]
     while atom = next_atom
+      @stack.last.children << atom
+
       if atom.container?
         @stack << atom
       elsif filehandle.pos == atom.next_position

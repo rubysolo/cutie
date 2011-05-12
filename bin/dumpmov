@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require File.expand_path('../../lib/cutie', __FILE__)
+
+video = Cutie.open(ARGV.first)
+video.dump_atoms

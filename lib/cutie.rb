@@ -1,5 +1,5 @@
 class Cutie
-  attr_accessor :filehandle
+  attr_accessor :filehandle, :root
 
   # quicktime files are composed of atoms, which are nested containers
   # for different data types
@@ -89,8 +89,23 @@ class Cutie
 
   class << self
     def open(filepath)
-      new(File.open filepath, 'rb')
+      new(File.open filepath, 'rb').parse
     end
+  end
+
+  def parse
+    @root = next_atom
+
+    @stack = [@root]
+    while atom = next_atom
+      if atom.container?
+        @stack << atom
+      elsif filehandle.pos == atom.next_position
+        @stack.pop
+      end
+    end
+
+    self
   end
 
   def dump_atoms

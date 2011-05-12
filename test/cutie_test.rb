@@ -6,8 +6,9 @@ class TestCutie < Test::Unit::TestCase
 
   def test_empty_movie
     video = Cutie.open(File.expand_path('../empty.mov', __FILE__))
+    atom  = video.root
 
-    video.dump_atoms
+    assert_equal "moov", atom.format
   end
 
 end

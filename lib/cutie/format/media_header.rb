@@ -1,7 +1,8 @@
 # a MediaHeader (mdhd) is a specific type of atom that has metadata
 # about a media atom
 class MediaHeader < Atom
-  attr_accessor :version, :flags, :ctime, :mtime, :tscale, :ticks, :language, :quality
+  attr_accessor :version, :flags, :ctime, :mtime, :tscale, :ticks,
+                :language, :quality
 
   def read(fh)
     @version = "\x00#{ fh.read(1) }".unpack('n').first
@@ -29,7 +30,11 @@ class MediaHeader < Atom
   end
 
   def to_s
-    "MediaHeader v#{ version } [#{ position }, #{ size } bytes] [#{ duration } sec]"
+    "MediaHeader v#{ version } #{ size_label } #{ duration_label }"
+  end
+
+  def duration_label
+    "[#{ duration } sec]"
   end
 
   def duration

@@ -39,6 +39,14 @@ class Atom
   end
 
   def to_s
-    "#{ format } atom #{ container? ? '(C) ' : '' }[#{ position }, #{ size } bytes]"
+    "#{ format } atom #{ container_label }#{ size_label }"
+  end
+
+  def size_label
+    "[#{ position }, #{ size } bytes]"
+  end
+
+  def container_label
+    container? ? '(C)' : ''
   end
 end

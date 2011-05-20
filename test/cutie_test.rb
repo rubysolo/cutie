@@ -8,7 +8,7 @@ Cutie::DEBUG = StringIO.new
 class TestCutie < Test::Unit::TestCase
 
   def test_empty_movie
-    video = Cutie.open(File.expand_path('../empty.mov', __FILE__))
+    video = Cutie.open(fixture_movie('empty.mov'))
     atom  = video.root
 
     assert_equal "moov", atom.format
@@ -19,8 +19,14 @@ class TestCutie < Test::Unit::TestCase
   end
 
   def test_debug_flag
-    video = Cutie.open(File.expand_path('../empty.mov', __FILE__), true)
+    video = Cutie.open(fixture_movie('empty.mov'), true)
     assert video.debug?
+  end
+
+  private
+
+  def fixture_movie(filename)
+    File.expand_path("../fixtures/#{ filename }", __FILE__)
   end
 
 end

@@ -18,8 +18,7 @@ class Cutie
   end
 
   def debug(msg)
-    return unless debug?
-    DEBUG.puts msg
+    DEBUG.puts msg if debug?
   end
 
   def parse

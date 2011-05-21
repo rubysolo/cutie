@@ -71,7 +71,7 @@ class Cutie
 
       # check for extended or invalid atom size
       if atom.size == 1
-        atom.size = filehandle.read(8).unpack('Q') # TODO : force big-endian?
+        atom.size = filehandle.read(8).unpack('Q').first # TODO : force big-endian?
       end
 
       raise "invalid atom size #{ atom.size }" if atom.size < 0

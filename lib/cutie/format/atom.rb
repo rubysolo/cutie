@@ -6,28 +6,33 @@ class Atom
     rmra  stbl  trak  tref  udta  vnrp
   )
 
-  attr_accessor :size, :format, :position, :children
+  attr_accessor :fh, :size, :format, :position, :children
 
   def self.init(fh, position, size, format)
     klass = format == "mdhd" ? MediaHeader : Atom
-    atom = klass.new(position, size, format)
-    atom.read(fh) if atom.respond_to?(:read)
+    atom = klass.new(fh, position, size, format)
+    atom.read if atom.respond_to?(:read)
     atom
   end
 
-  def initialize(position, size, format)
+  def initialize(fh, position, size, format)
+    @fh       = fh
     @position = position
     @size     = size
     @format   = format
     @children = []
   end
 
-  def read(fh)
+  def read
     # if our atom type is a container, we're done -- filehandle
     # is in position to read the first child
     # otherwise, seek to the end of the data...
     return if container?
     fh.pos += size
+  end
+
+  def close
+    fh.pos += 4 if format == "udta"
   end
 
   def container?

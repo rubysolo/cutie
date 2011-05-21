@@ -36,7 +36,7 @@ class Cutie
         @stack << atom
       elsif filehandle.pos == @stack.last.next_position
         debug "popping last container from the stack"
-        @stack.pop
+        @stack.pop.close
       end
     end
 

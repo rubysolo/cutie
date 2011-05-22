@@ -1,10 +1,11 @@
 class Cutie
   DEBUG = $stdout
-  attr_accessor :root
+  attr_accessor :root, :atoms
 
   def initialize(fh, debug=false)
     @debug      = debug
     @filehandle = fh
+    @atoms      = []
   end
 
   class << self
@@ -23,11 +24,14 @@ class Cutie
 
   def parse
     @root = next_atom
+    atoms << @root
     debug "loaded root atom: #{ @root }"
 
     @stack = [@root]
     while atom = next_atom
       debug "loaded child atom: #{ atom }"
+      atoms << atom
+
       @stack.last.children << atom
       debug "stack now contains #{ @stack.length } atoms"
 
@@ -44,21 +48,12 @@ class Cutie
   end
 
   def dump_atoms
-    indent = 0
-    @filehandle.rewind
-
-    while atom = next_atom
-      print "  " * indent rescue nil
+    atoms.each do |atom|
       puts atom.to_s
-
-      if atom.container?
-        indent += 1
-      elsif @filehandle.pos == atom.next_position
-        indent -= 1
-      end
     end
   end
 
+  private
 
   def next_atom
     start_position = @filehandle.pos

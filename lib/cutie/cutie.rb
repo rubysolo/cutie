@@ -49,6 +49,7 @@ class Cutie
 
   def dump_atoms
     @atoms.each do |atom|
+      print "  " * atom.level
       puts atom.to_s
     end
   end

@@ -1,6 +1,6 @@
 class Cutie
   DEBUG = $stdout
-  attr_accessor :root, :atoms
+  attr_reader :root, :atoms
 
   def initialize(fh, debug=false)
     @debug      = debug
@@ -24,13 +24,13 @@ class Cutie
 
   def parse
     @root = next_atom
-    atoms << @root
+    @atoms << @root
     debug "loaded root atom: #{ @root }"
 
     @stack = [@root]
     while atom = next_atom
       debug "loaded child atom: #{ atom }"
-      atoms << atom
+      @atoms << atom
 
       @stack.last.add_child(atom)
       debug "stack now contains #{ @stack.length } atoms"
@@ -48,7 +48,7 @@ class Cutie
   end
 
   def dump_atoms
-    atoms.each do |atom|
+    @atoms.each do |atom|
       puts atom.to_s
     end
   end

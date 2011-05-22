@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require File.expand_path('../../lib/cutie', __FILE__)
+require_relative '../lib/cutie'
 require 'optparse'
 
 options = {}

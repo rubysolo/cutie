@@ -6,7 +6,7 @@ class Atom
     rmra  stbl  trak  tref  udta  vnrp
   )
 
-  attr_accessor :fh, :size, :format, :position, :children
+  attr_accessor :fh, :size, :format, :position, :children, :level
 
   def self.init(fh, position, size, format)
     klass = format == "mdhd" ? MediaHeader : Atom
@@ -21,6 +21,7 @@ class Atom
     @size     = size
     @format   = format
     @children = []
+    @level    = 0
   end
 
   def read
@@ -37,6 +38,11 @@ class Atom
 
   def container?
     CONTAINER_TYPES.include?(format)
+  end
+
+  def add_child(atom)
+    atom.level = level + 1
+    children << atom
   end
 
   def next_position

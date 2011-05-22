@@ -32,7 +32,7 @@ class Cutie
       debug "loaded child atom: #{ atom }"
       atoms << atom
 
-      @stack.last.children << atom
+      @stack.last.add_child(atom)
       debug "stack now contains #{ @stack.length } atoms"
 
       if atom.container?

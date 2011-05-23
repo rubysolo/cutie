@@ -12,7 +12,7 @@ module Cutie
     def self.init(fh, position, size, format)
       klass = format == "mdhd" ? MediaHeader : Atom
       atom = klass.new(fh, position, size, format)
-      atom.read if atom.respond_to?(:read)
+      atom.read
       atom
     end
 

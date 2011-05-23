@@ -7,7 +7,8 @@ module Cutie
       rmra  stbl  trak  tref  udta  vnrp
     )
 
-    attr_accessor :fh, :size, :format, :position, :children, :level
+    attr_accessor :level, :size
+    attr_reader :children, :format, :position
 
     def self.init(fh, position, size, format)
       klass = format == "mdhd" ? MediaHeader : Atom
@@ -30,15 +31,15 @@ module Cutie
       # is in position to read the first child
       # otherwise, seek to the end of the data...
       return if container?
-      fh.pos += size
+      @fh.pos += @size
     end
 
     def close
-      fh.pos += 4 if format == "udta"
+      @fh.pos += 4 if @format == "udta"
     end
 
     def container?
-      CONTAINER_TYPES.include?(format)
+      CONTAINER_TYPES.include?(@format)
     end
 
     def add_child(atom)
@@ -47,15 +48,15 @@ module Cutie
     end
 
     def next_position
-      position + size
+      @position + @size
     end
 
     def to_s
-      "#{ format } atom #{ container_label }#{ size_label }"
+      "#{ @format } atom #{ container_label }#{ size_label }"
     end
 
     def size_label
-      "[#{ position }, #{ size } bytes]"
+      "[#{ @position }, #{ @size } bytes]"
     end
 
     def container_label

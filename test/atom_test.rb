@@ -17,7 +17,7 @@ class TestAtom < Test::Unit::TestCase
     assert_equal 0, child_one.level
     assert_equal 0, child_one.children.count
 
-    root.add_child(child_one)
+    root << child_one
     assert_equal 1, child_one.level
     assert_equal 1, root.children.count
   end

@@ -42,7 +42,7 @@ module Cutie
       CONTAINER_TYPES.include?(@format)
     end
 
-    def add_child(atom)
+    def <<(atom)
       atom.level = level + 1
       children << atom
     end

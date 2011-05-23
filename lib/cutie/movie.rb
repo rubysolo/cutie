@@ -33,7 +33,7 @@ module Cutie
         debug "loaded child atom: #{ atom }"
         @atoms << atom
 
-        @stack.last.add_child(atom)
+        @stack.last << atom
         debug "stack now contains #{ @stack.length } atoms"
 
         if atom.container?

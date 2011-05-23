@@ -9,11 +9,11 @@ class TestAtom < Test::Unit::TestCase
   end
 
   def test_nesting_level_tracking
-    root = Atom.new(@stub_fh, 0, 0, "root")
+    root = Cutie::Atom.new(@stub_fh, 0, 0, "root")
     assert_equal 0, root.level
     assert_equal 0, root.children.count
 
-    child_one = Atom.new(@stub_fh, 0, 0, "chld")
+    child_one = Cutie::Atom.new(@stub_fh, 0, 0, "chld")
     assert_equal 0, child_one.level
     assert_equal 0, child_one.children.count
 

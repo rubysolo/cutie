@@ -17,5 +17,5 @@ if ARGV.empty?
   exit(-1)
 end
 
-video = Cutie.open(ARGV.first, options[:debug])
+video = Cutie::Movie.open(ARGV.first, options[:debug])
 video.dump_atoms

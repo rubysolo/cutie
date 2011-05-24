@@ -10,9 +10,16 @@ module Cutie
     attr_accessor :level, :size
     attr_reader :children, :format, :position
 
-    def self.init(fh, position, size, format)
-      klass = format == "mdhd" ? MediaHeader : Atom
-      atom = klass.new(fh, position, size, format)
+    def self.build(params={})
+      klass = params[:format] == "mdhd" ? MediaHeader : Atom
+
+      atom = klass.new(
+        params[:filehandle],
+        params[:filehandle].pos - 8,
+        params[:size],
+        params[:format]
+      )
+
       atom.read
       atom
     end

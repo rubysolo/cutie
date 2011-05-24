@@ -58,13 +58,15 @@ module Cutie
     private
 
     def next_atom
-      start_position = @filehandle.pos
-
       if bytes = @filehandle.read(8)
         raise "Expected 8 bytes, got #{ bytes.length }" unless bytes.length == 8
 
         size, format = *bytes.unpack('NA4')
-        atom = Atom.init(@filehandle, start_position, size, format)
+        atom = Atom.build(
+          :filehandle => @filehandle,
+          :size       => size,
+          :format     => format
+        )
 
         # check for extended or invalid atom size
         if atom.size == 1

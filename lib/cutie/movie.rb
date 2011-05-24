@@ -1,46 +1,31 @@
 module Cutie
   class Movie
-    DEBUG = $stdout
     attr_reader :root, :atoms
 
-    def initialize(fh, debug=false)
-      @debug      = debug
+    def initialize(fh)
       @filehandle = fh
       @atoms      = []
     end
 
     class << self
-      def open(filepath, debug=false)
-        new(File.open(filepath, 'rb'), debug).parse
+      def open(filepath)
+        new(File.open(filepath, 'rb')).parse
       end
-    end
-
-    def debug?
-      @debug
-    end
-
-    def debug(msg)
-      DEBUG.puts msg if debug?
     end
 
     def parse
       @root = next_atom
       @atoms << @root
-      debug "loaded root atom: #{ @root }"
 
       @stack = [@root]
       while atom = next_atom
-        debug "loaded child atom: #{ atom }"
         @atoms << atom
 
         @stack.last << atom
-        debug "stack now contains #{ @stack.length } atoms"
 
         if atom.container?
-          debug "pushing container atom onto the stack"
           @stack << atom
         elsif @filehandle.pos == @stack.last.next_position
-          debug "popping last container from the stack"
           @stack.pop.close
         end
       end

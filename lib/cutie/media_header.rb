@@ -14,8 +14,8 @@ module Cutie
         @ctime  = read_uint16(fh)
         @mtime  = read_uint16(fh)
       else
-        @ctime  = fh.read(8).unpack('N')
-        @mtime  = fh.read(8).unpack('N')
+        @ctime  = read_uint32(fh)
+        @mtime  = read_uint32(fh)
       end
 
       @tscale   = read_uint16(fh)
@@ -23,7 +23,7 @@ module Cutie
       if @version == 0
         @ticks  = read_uint16(fh)
       else
-        @ticks  = fh.read(8).unpack('N')
+        @ticks  = read_uint32(fh)
       end
 
       @language = read_uint8(fh)
@@ -43,6 +43,11 @@ module Cutie
     end
 
     private
+
+    def read_uint32(s)
+			# TODO : this has potential endian-ness issues
+      s.read(8).unpack('Q').first
+    end
 
     def read_uint16(s)
       s.read(4).unpack('N').first
